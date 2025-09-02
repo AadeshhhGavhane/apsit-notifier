@@ -8,6 +8,7 @@ from telegram.ext import Application
 from .config import load_config
 from .storage import MongoStorage
 from .senders.telegram_sender import TelegramSender
+from .senders.whatsapp_sender import WhatsAppSender
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +31,18 @@ class NotificationBot:
             .build()
         )
         self.telegram_sender: TelegramSender | None = None
+        self.whatsapp_sender: WhatsAppSender | None = None
 
     async def _on_init(self, app: Application) -> None:
         if self.config.CHANNEL_ID:
             self.telegram_sender = TelegramSender(app.bot, self.config.CHANNEL_ID)
-
+        if self.config.WHATSAPP_AUTH_TOKEN and self.config.WHATSAPP_RECIPIENT:
+            self.whatsapp_sender = WhatsAppSender(
+                session=self.session,
+                api_url=self.config.WHATSAPP_API_URL,
+                auth_token=self.config.WHATSAPP_AUTH_TOKEN,
+                recipient=self.config.WHATSAPP_RECIPIENT,
+            )
         self._tick_task = app.create_task(self._ticker_loop())
 
     async def _on_shutdown(self, app: Application) -> None:
@@ -184,15 +192,25 @@ class NotificationBot:
             return f"{base}\n🗓 {clean_date}\n👤 {clean_author}"
         return base
 
+    def format_whatsapp_message(self, section, item):
+        message = f"📢 New {section} Alert!\n{item['title']}\n🔗 {item['link']}"
+        if 'date' in item and 'author' in item:
+            message += f"\n🗓 {item['date']}\n👤 {item['author']}"
+        return message
+
     async def send_notifications(self, new_notifications):
         telegram_messages: list[str] = []
+        whatsapp_messages: list[str] = []
 
         for section, items in new_notifications.items():
             for item in items:
                 telegram_messages.append(self.format_telegram_message(section, item))
+                whatsapp_messages.append(self.format_whatsapp_message(section, item))
 
         if self.telegram_sender and telegram_messages:
             await self.telegram_sender.send_items(telegram_messages)
+        if self.whatsapp_sender and whatsapp_messages:
+            await self.whatsapp_sender.send_items(whatsapp_messages)
 
     async def _ticker_loop(self) -> None:
         try:
@@ -205,4 +223,3 @@ class NotificationBot:
     def run(self):
         logger.info("Bot started. Press Ctrl+C to stop.")
         self.application.run_polling()
- 
