@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    container_name: apsit-notifier
+    env_file:
+      - .env
+    restart: unless-stopped
+    volumes:
+      - ./:/app:ro
+      - app_venv:/app/.venv
+    command: ["uv", "run", "--no-sync", "main.py"]
+
+volumes:
+  app_venv:
