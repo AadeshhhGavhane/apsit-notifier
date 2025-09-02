@@ -1,0 +1,43 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.coverage
+.cache/
+
+# Virtual envs
+.venv/
+venv/
+
+# Git
+.git/
+.gitignore
+
+# Env and secrets (compose injects them at runtime)
+.env
+.env.*
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Build artifacts
+build/
+dist/
+
+# Logs
+*.log
+
+# Local data (app uses MongoDB; no need to copy host data)
+data/
+
+# Containers
+docker-compose.override.yml

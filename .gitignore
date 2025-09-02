@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+*.log
+.coverage
+.cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment files (use env.example instead)
+.env
+.env.*
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Build artifacts
+build/
+dist/
+
+# Docker / Compose
+docker-compose.override.yml
+
+# uv
+# Keep uv.lock committed for reproducible builds
+# .uv/ (if you ever create one locally)
