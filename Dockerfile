@@ -8,13 +8,15 @@ ENV UV_LINK_MODE=copy \
     UV_PYTHON=3.12 \
     UV_COMPILE_BYTECODE=1
 
-# Layers for better caching
+# Copy dependency files
 COPY pyproject.toml uv.lock* ./
+
+# Install deps with caching
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-cache
 
-# Project files
+# Copy source
 COPY . .
 
-# Run
-CMD ["uv", "run", "main.py"]
+# Default run command
+CMD ["uv", "run", "--no-sync", "main.py"]
