@@ -13,7 +13,7 @@ COPY pyproject.toml uv.lock* ./
 
 # Install deps with caching
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-cache
+    uv sync --frozen
 
 # Copy source
 COPY . .
